@@ -31,11 +31,14 @@ static char PathKey;
 }
 
 + (void)writeToPlistWithKey:(NSString *)key
-                      value:(NSString *)value {
+                      value:(id)value {
     NSString *path = objc_getAssociatedObject(self, &PathKey);
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-    [dict setObject:value forKey:key];
-    [dict writeToFile:path atomically:YES ];
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+    if (dic == nil) {
+        dic = [NSMutableDictionary dictionary];
+    }
+    [dic setObject:value forKey:key];
+    [dic writeToFile:path atomically:YES ];
 }
 
 + (void)name:(NSString *)name

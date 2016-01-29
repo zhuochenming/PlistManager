@@ -19,8 +19,9 @@
 + (void)name:(NSString *)name
     password:(NSString *)password;
 
+//写入其他数据
 + (void)writeToPlistWithKey:(NSString *)key
-                      value:(NSString *)value;
+                      value:(id)value;
 
 //读取
 + (id)readDataWithKey:(NSString *)key;
