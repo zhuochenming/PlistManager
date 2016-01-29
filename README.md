@@ -8,7 +8,4 @@ init
 
 2.2 [PlistManager writeToPlistWithKey:@"小七" value:@"卖萌"];//添加其他文件
 
-3。读取 [PlistManager readDataWithKey:@"小七"]; 
-
-#define Name @"name"
-#define PassWord @"password" //用来读取用户名密码
+3。读取 [PlistManager readDataWithKey:@"小七"]; #define Name @"name",#define PassWord @"password" //用来读取用户名密码
