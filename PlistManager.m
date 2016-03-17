@@ -89,18 +89,42 @@
     NSString *plistError;
     NSPropertyListFormat format;
     
-    id plist = [NSPropertyListSerialization propertyListFromData:plistData mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&plistError];
-    return [(NSArray *)plist valueForKey:key];
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        id plist = [NSPropertyListSerialization propertyListFromData:plistData mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&plistError];
+        return [(NSArray *)plist valueForKey:key];
+#pragma clang diagnostic pop
+    } else {
+        NSError *error = [NSError new];
+        id plist = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListReadCorruptError format:&format error:&error];
+        return [(NSArray *)plist valueForKey:key];
+    }
 }
 
 + (id)readAllDataWithPath:(NSString *)path {
     NSData *plistData = [NSData dataWithContentsOfFile:path];
     
+
     NSString *plistError;
     NSPropertyListFormat format;
     
-    id plist = [NSPropertyListSerialization propertyListFromData:plistData mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&plistError];
-    return (NSDictionary *)plist;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        id plist = [NSPropertyListSerialization propertyListFromData:plistData mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&plistError];
+        return (NSDictionary *)plist;
+#pragma clang diagnostic pop
+    } else {
+        NSError *error = [NSError new];
+        id plist = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListReadCorruptError format:&format error:&error];
+        return (NSDictionary *)plist;
+    }
+}
+
++ (void)removePlistWithPath:(NSString *)path {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    [manager removeItemAtPath:path error:nil];
 }
 
 #pragma mark - 操作默认的plist文件

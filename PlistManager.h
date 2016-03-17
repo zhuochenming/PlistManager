@@ -43,6 +43,7 @@
 
 + (id)readAllDataWithPath:(NSString *)path;
 
++ (void)removePlistWithPath:(NSString *)path;
 
 #pragma mark - 只能操作默认路径的plist文件
 + (void)createPlist;
