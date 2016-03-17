@@ -96,7 +96,7 @@
         return [(NSArray *)plist valueForKey:key];
 #pragma clang diagnostic pop
     } else {
-        NSError *error = [NSError new];
+        NSError *error = nil;
         id plist = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListReadCorruptError format:&format error:&error];
         return [(NSArray *)plist valueForKey:key];
     }
@@ -116,7 +116,7 @@
         return (NSDictionary *)plist;
 #pragma clang diagnostic pop
     } else {
-        NSError *error = [NSError new];
+        NSError *error = nil;
         id plist = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListReadCorruptError format:&format error:&error];
         return (NSDictionary *)plist;
     }
