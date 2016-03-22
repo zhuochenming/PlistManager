@@ -113,16 +113,22 @@
     NSString *plistError;
     NSPropertyListFormat format;
     
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0) {
+    if (plistData) {
+        
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        id plist = [NSPropertyListSerialization propertyListFromData:plistData mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&plistError];
-        return (NSDictionary *)plist;
+            id plist = [NSPropertyListSerialization propertyListFromData:plistData mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&plistError];
+            return (NSDictionary *)plist;
 #pragma clang diagnostic pop
+        } else {
+            NSError *error = nil;
+            id plist = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListReadCorruptError format:&format error:&error];
+            return (NSDictionary *)plist;
+        }
+        
     } else {
-        NSError *error = nil;
-        id plist = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListReadCorruptError format:&format error:&error];
-        return (NSDictionary *)plist;
+        return nil;
     }
 }
 
