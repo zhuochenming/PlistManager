@@ -8,10 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define PlistName @"info"
-
-#define Name @"name"
-#define PassWord @"password"
+static NSString * const DefaultPlistName = @"SearchHistory";
 
 @interface PlistManager : NSObject
 
@@ -25,42 +22,33 @@
 
 + (NSString *)libraryDicWithDic:(NSString *)dicName fileName:(NSString *)fileName;
 
+#pragma mark - 操作默认路径的plist文件
+//必须用此初始化方式，单例模式，
++ (instancetype)defaultPlist;
+
+- (void)writeToPlistWithKey:(NSString *)key value:(id)value;
+
+- (void)writeToPlistWithDic:(NSDictionary *)key;
+
+- (id)readDataWithKey:(NSString *)key;
+
+- (id)readAllData;
+
+- (void)removePlist;
+
 #pragma mark - 操作自己创建的plist文件
-//创建 path是文件路径 要添加plist文件名和后缀
-+ (void)createPlistWithPath:(NSString *)path;
+//创建 path是文件路径 要添加plist路径
+- (void)createPlistWithPath:(NSString *)path;
 
-//写入其他数据
-+ (void)writeToPlistWithKey:(NSString *)key
-                      value:(id)value
-                       path:(NSString *)path;
+- (void)writeToPlistWithKey:(NSString *)key value:(id)value path:(NSString *)path;
 
-+ (void)writeToPlistWithDic:(NSDictionary *)dic
-                       path:(NSString *)path;
+- (void)writeToPlistWithDic:(NSDictionary *)dic path:(NSString *)path;
 
-//读取
-+ (id)readDataWithKey:(NSString *)key
-                 path:(NSString *)path;
+- (id)readDataWithKey:(NSString *)key path:(NSString *)path;
 
-+ (id)readAllDataWithPath:(NSString *)path;
+- (id)readAllDataWithPath:(NSString *)path;
 
-+ (void)removePlistWithPath:(NSString *)path;
-
-#pragma mark - 只能操作默认路径的plist文件
-+ (void)createPlist;
-
-+ (void)name:(NSString *)name
-    password:(NSString *)password;
-
-//写入其他数据
-+ (void)writeToPlistWithKey:(NSString *)key
-                      value:(id)value;
-
-+ (void)writeToPlistWithDic:(NSDictionary *)key;
-
-//读取
-+ (id)readDataWithKey:(NSString *)key;
-
-+ (id)readAllData;
+- (void)removePlistWithPath:(NSString *)path;
 
 @end
 

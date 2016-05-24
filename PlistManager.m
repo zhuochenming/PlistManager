@@ -7,6 +7,13 @@
 //
 
 #import "PlistManager.h"
+#import <objc/runtime.h>
+
+@interface PlistManager ()
+
+@property (nonatomic, strong) NSString *defaultPath;
+
+@end
 
 @implementation PlistManager
 
@@ -46,15 +53,59 @@
     return plistPath;
 }
 
+#pragma mark - 操作默认的plist文件
++ (instancetype)defaultPlist {
+    static PlistManager *plistManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        plistManager = [[PlistManager alloc] init];
+        [plistManager createPlist];
+    });
+    return plistManager;
+}
+
+- (instancetype)init {
+    NSAssert(NO, @"请用-defaultPlist方法初始化");
+    return nil;
+}
+
+- (void)createPlist {
+    NSString *documentPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    NSString *plistPath = [documentPath stringByAppendingString:[NSString stringWithFormat:@"/%@.plist", DefaultPlistName]];
+    self.defaultPath = plistPath;
+    [self createPlistWithPath:plistPath];
+}
+
+- (void)writeToPlistWithKey:(NSString *)key value:(id)value {
+    [self writeToPlistWithKey:key value:value path:_defaultPath];
+}
+
+- (void)writeToPlistWithDic:(NSDictionary *)dic {
+    [self writeToPlistWithDic:dic path:_defaultPath];
+}
+
+//读取
+- (id)readDataWithKey:(NSString *)key {
+    return [self readDataWithKey:key path:_defaultPath];
+}
+
+- (id)readAllData {
+    return [self readAllDataWithPath:_defaultPath];
+}
+
+- (void)removePlist {
+    [self removePlistWithPath:_defaultPath];
+}
+
 #pragma mark - 操作自己创建的plist文件
-+ (void)createPlistWithPath:(NSString *)path {
+- (void)createPlistWithPath:(NSString *)path {
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
         [[NSFileManager defaultManager] createFileAtPath:path contents:nil attributes:nil];
     }
 }
 
 //写入其他数据
-+ (void)writeToPlistWithKey:(NSString *)key
+- (void)writeToPlistWithKey:(NSString *)key
                       value:(id)value
                        path:(NSString *)path {
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
@@ -65,7 +116,7 @@
     [dic writeToFile:path atomically:YES ];
 }
 
-+ (void)writeToPlistWithDic:(NSDictionary *)dic
+- (void)writeToPlistWithDic:(NSDictionary *)dic
                        path:(NSString *)path {
     NSMutableDictionary *mDic = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
     if (mDic == nil) {
@@ -82,7 +133,7 @@
 }
 
 //读取
-+ (id)readDataWithKey:(NSString *)key
+- (id)readDataWithKey:(NSString *)key
                  path:(NSString *)path {
     NSData *plistData = [NSData dataWithContentsOfFile:path];
     
@@ -106,10 +157,9 @@
     }
 }
 
-+ (id)readAllDataWithPath:(NSString *)path {
+- (id)readAllDataWithPath:(NSString *)path {
     NSData *plistData = [NSData dataWithContentsOfFile:path];
     
-
     NSString *plistError;
     NSPropertyListFormat format;
     
@@ -132,57 +182,9 @@
     }
 }
 
-+ (void)removePlistWithPath:(NSString *)path {
+- (void)removePlistWithPath:(NSString *)path {
     NSFileManager *manager = [NSFileManager defaultManager];
     [manager removeItemAtPath:path error:nil];
-}
-
-#pragma mark - 操作默认的plist文件
-+ (NSString *)filePath {
-    NSString *documentPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSString *plistPath = [documentPath stringByAppendingString:[NSString stringWithFormat:@"/%@.plist", PlistName]];
-    return plistPath;
-}
-
-+ (void)createPlist {
-    NSString *plistPath = [self filePath];
-    [self createPlistWithPath:plistPath];
-}
-
-+ (void)writeToPlistWithKey:(NSString *)key
-                      value:(id)value {
-    NSString *path = [self filePath];
-    [self writeToPlistWithKey:key value:value path:path];
-}
-
-+ (void)writeToPlistWithDic:(NSDictionary *)dic {
-    NSString *path = [self filePath];
-    [self writeToPlistWithDic:dic path:path];
-}
-
-+ (void)name:(NSString *)name
-    password:(NSString *)password {
-    NSString *path = [self filePath];
-    NSMutableDictionary *dic = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-    if (dic == nil) {
-        dic = [NSMutableDictionary dictionary];
-    }
-    
-    [dic setObject:name forKey:Name];
-    [dic setObject:password forKey:PassWord];
-    
-    [dic writeToFile:path atomically:YES];
-}
-
-//读取
-+ (id)readDataWithKey:(NSString *)key {
-    NSString *path = [self filePath];
-    return [self readDataWithKey:key path:path];
-}
-
-+ (id)readAllData {
-    NSString *path = [self filePath];
-    return [self readAllDataWithPath:path];
 }
 
 @end
