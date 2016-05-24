@@ -64,11 +64,6 @@
     return plistManager;
 }
 
-- (instancetype)init {
-    NSAssert(NO, @"请用-defaultPlist方法初始化");
-    return nil;
-}
-
 - (void)createPlist {
     NSString *documentPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
     NSString *plistPath = [documentPath stringByAppendingString:[NSString stringWithFormat:@"/%@.plist", DefaultPlistName]];
